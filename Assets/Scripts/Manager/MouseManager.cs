@@ -46,6 +46,10 @@ public class MouseManager : MonoBehaviour
                     //vector表示指针有效位置自左上角的偏移量
                     Cursor.SetCursor(target, new Vector2(16, 16), cursorMode: CursorMode.Auto);
                     break;
+                case "Enemy":
+                    //vector表示指针有效位置自左上角的偏移量
+                    Cursor.SetCursor(attack, new Vector2(16, 16), cursorMode: CursorMode.Auto);
+                    break;
             }
         }
     }
