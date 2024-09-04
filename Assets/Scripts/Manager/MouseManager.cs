@@ -17,6 +17,7 @@ public class MouseManager : MonoBehaviour
     RaycastHit hitInfo; 
 
     public event Action<Vector3> OnMouseClicked;
+    public event Action<GameObject> OnEnemyClick;
 
     private void Awake()
     {
@@ -61,6 +62,10 @@ public class MouseManager : MonoBehaviour
             if (hitInfo.collider.gameObject.CompareTag("Ground"))
             {
                 OnMouseClicked?.Invoke(hitInfo.point);
+            }
+            if (hitInfo.collider.gameObject.CompareTag("Enemy"))
+            {
+                OnEnemyClick?.Invoke(hitInfo.collider.gameObject);
             }
         }
     }
