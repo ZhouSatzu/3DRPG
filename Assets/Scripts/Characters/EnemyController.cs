@@ -10,7 +10,7 @@ public enum EnemyStates {GUARD,PATROL,CHASE,DEAD}
 public class EnemyController : MonoBehaviour
 {
     private NavMeshAgent agent;
-
+    private CharacterStats characterStats;
     private EnemyStates enemyStates;
 
     private GameObject attackTarget;
@@ -18,6 +18,7 @@ public class EnemyController : MonoBehaviour
     private Animator animator;
 
     private float speed;
+    private float lastAttackTime;
 
     [Header("Basic Settings")]
     public float sightRadius;
@@ -40,6 +41,7 @@ public class EnemyController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        characterStats = GetComponent<CharacterStats>();
 
         speed = agent.speed;
         BirthPos = transform.position;
@@ -63,6 +65,7 @@ public class EnemyController : MonoBehaviour
     {
         SwitchStates();
         SwitchAnimations();
+        lastAttackTime -= Time.deltaTime;
     }
 
     void SwitchAnimations()
@@ -113,6 +116,20 @@ public class EnemyController : MonoBehaviour
         return false;
     }
 
+    bool TargetInAttackRange()
+    {
+        if (attackTarget != null)
+            return Vector3.Distance(attackTarget.transform.position, transform.position) <= characterStats.attackData.attackRange;
+        else return false;
+    }
+
+    bool TargetInSkillRange()
+    {
+        if (attackTarget != null)
+            return Vector3.Distance(attackTarget.transform.position, transform.position) <= characterStats.attackData.skillRange;
+        else return false;
+    }
+
     void EnemyPatrol()
     {
         isChase = false;
@@ -157,7 +174,43 @@ public class EnemyController : MonoBehaviour
         else
         {
             isFollow = true;
+            agent.isStopped = false;
             agent.destination = attackTarget.transform.position;
+        }
+        //ÔÚ¹¥»÷·¶Î§ÄÚÔò¹¥»÷
+        if (TargetInAttackRange() || TargetInSkillRange()) 
+        {
+            isFollow = false;
+            agent.isStopped = true;
+
+            //¹¥»÷ÀäÈ´
+            if(lastAttackTime < 0)
+            {
+                lastAttackTime = characterStats.attackData.coolDown;
+
+                //±©»÷ÅÐ¶Ï
+                characterStats.isCritical = Random.value < characterStats.attackData.criticalChance;
+
+                //Ö´ÐÐ¹¥»÷
+                Attack();
+            }
+        }
+    }
+
+    void Attack()
+    {
+        transform.LookAt(attackTarget.transform.position);
+
+        if(TargetInAttackRange())
+        {
+            //½üÉí¹¥»÷¶¯»­
+            animator.SetTrigger("Attack");
+            animator.SetBool("Critical",characterStats.isCritical);
+        }
+        if(TargetInSkillRange())
+        {
+            //Ô¶³Ì¼¼ÄÜ¹¥»÷¶¯»­
+            animator.SetTrigger("Skill");
         }
     }
 
