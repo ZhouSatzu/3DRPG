@@ -1,14 +1,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
 {
+    //模版数据
+    public CharacterData_SO templateData;
+
     public CharacterData_SO characterData;
     public AttackData_SO attackData;
 
     [HideInInspector]public bool isCritical;
+
+    private void Awake()
+    {
+        //生成一个模版data的副本
+        if(templateData != null)
+        {
+            characterData = Instantiate(templateData);
+        }
+    }
 
     #region Read From Data_SO
     //属性（Property）的使用.属性定义：MaxHealth 是一个属性，而不是一个字段。属性允许你在获取或设置值时添加额外的逻辑。
@@ -73,6 +86,19 @@ public class CharacterStats : MonoBehaviour
     public void TakeDamage(CharacterStats attacker,CharacterStats defender)
     {
         int damage = Mathf.Max(attacker.currentDamage() - defender.CurrentDefence, 0);
+        CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
+
+        //如果暴击受伤者触发受伤动画
+        if(attacker.isCritical)
+        {
+            defender.GetComponent<Animator>().SetTrigger("Hurt");
+        }
+    }
+
+    //函数重载，用于rock造成伤害
+    public void TakeDamage(int damage,CharacterStats defender)
+    {
+        int currentdamage = Mathf.Max(damage - defender.CurrentDefence, 0);
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
     }
 

@@ -5,15 +5,16 @@ using UnityEngine.AI;
 
 public enum EnemyStates {GUARD,PATROL,CHASE,DEAD}
 
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent), typeof(CharacterStats))]
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IEndGameObserver
 {
     private NavMeshAgent agent;
-    private CharacterStats characterStats;
+    protected CharacterStats characterStats;
     private EnemyStates enemyStates;
+    private Collider coll;
 
-    private GameObject attackTarget;
+    protected GameObject attackTarget;
 
     private Animator animator;
 
@@ -30,21 +31,27 @@ public class EnemyController : MonoBehaviour
     public float patrolRange;
 
     private Vector3 wayPoint;
-    private Vector3 BirthPos;
+    private Vector3 birthPos;
+    //出生时旋转角度
+    private Quaternion birthRotation;
 
     //bool配合动画
     bool isWalk;
     bool isChase;
     bool isFollow;
+    bool isDead;
+    bool playerDead;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         characterStats = GetComponent<CharacterStats>();
+        coll = GetComponent<Collider>();
 
         speed = agent.speed;
-        BirthPos = transform.position;
+        birthPos = transform.position;
+        birthRotation = transform.rotation;
         remainLookAtTime = lookAtTime;
     }
 
@@ -59,13 +66,34 @@ public class EnemyController : MonoBehaviour
             enemyStates=EnemyStates.PATROL;
             GetNewPoint();
         }
+
+        //TODO:场景切换后修改
+        GameManager.Instance.AddObserver(this);
     }
 
     private void Update()
     {
-        SwitchStates();
-        SwitchAnimations();
-        lastAttackTime -= Time.deltaTime;
+        if(characterStats.CurrentHealth <= 0)
+            isDead = true;
+        
+        if(!playerDead)
+        { 
+            SwitchStates();
+            SwitchAnimations();
+            lastAttackTime -= Time.deltaTime;
+        }        
+    }
+
+    private void OnEnable()
+    {
+        //GameManager.Instance.AddObserver(this);
+    }
+
+    private void OnDisable()
+    {
+        if (!GameManager.IsInitialized)
+            return;
+        GameManager.Instance.RemoveObserver(this);
     }
 
     void SwitchAnimations()
@@ -73,12 +101,15 @@ public class EnemyController : MonoBehaviour
         animator.SetBool("Walk",isWalk);
         animator.SetBool("Chase",isChase);
         animator.SetBool("Follow",isFollow);
+        animator.SetBool("Death", isDead);
     }
     
     void SwitchStates()
     {
+        if (isDead)
+            enemyStates = EnemyStates.DEAD;          
         //如果发现player切换到chase;
-        if(FoundPlayer())
+        else if(FoundPlayer())
         {
             enemyStates = EnemyStates.CHASE;
             //Debug.Log("foundplayer!");
@@ -87,6 +118,7 @@ public class EnemyController : MonoBehaviour
         switch(enemyStates)
         {
             case EnemyStates.GUARD:
+                EnemyGuard();
                 break;
             case EnemyStates.PATROL:
                 EnemyPatrol();
@@ -95,6 +127,7 @@ public class EnemyController : MonoBehaviour
                 EnemyChase();
                 break;
             case EnemyStates.DEAD:
+                EnemyDead();
                 break;
         }
     }
@@ -130,6 +163,27 @@ public class EnemyController : MonoBehaviour
         else return false;
     }
 
+    void EnemyGuard()
+    {
+        isChase = false;
+
+        //回到出生点
+        if(transform.position != birthPos)
+        {
+            isWalk = true;
+            agent.isStopped = false;
+            agent.destination = birthPos;
+
+            if (Vector3.Distance(birthPos, transform.position) <= agent.stoppingDistance)
+            {
+                //Debug.Log("111");
+                isWalk = false;
+                //回到出生时的角度 Lerp的作用是缓慢转到原始角度 数字指代转变速度
+                transform.rotation = Quaternion.Lerp(transform.rotation, birthRotation, 0.01f);
+            }
+        }
+    }
+
     void EnemyPatrol()
     {
         isChase = false;
@@ -151,6 +205,7 @@ public class EnemyController : MonoBehaviour
             agent.destination = wayPoint;
         }
     }
+
     void EnemyChase()
     {
         isWalk = false;
@@ -197,26 +252,36 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    void EnemyDead()
+    {
+        coll.enabled = false;
+        agent.radius = 0;
+        //延迟2s后
+        Destroy(gameObject, 2f);
+    }
+
     void Attack()
     {
         transform.LookAt(attackTarget.transform.position);
 
-        if(TargetInAttackRange())
+        if (TargetInAttackRange())
         {
             //近身攻击动画
             animator.SetTrigger("Attack");
-            animator.SetBool("Critical",characterStats.isCritical);
+            animator.SetBool("Critical", characterStats.isCritical);
         }
-        if(TargetInSkillRange())
+        if (TargetInSkillRange())
         {
             //远程技能攻击动画
             animator.SetTrigger("Skill");
         }
     }
 
+
+    //经验之谈：别忘了把HIT添加到对应动画帧数上！！！
     void Hit()
     {
-        if (attackTarget != null)
+        if (attackTarget != null && transform.IsFacingTarget(attackTarget.transform))
         {
             var targetStats = attackTarget.GetComponent<CharacterStats>();
             targetStats.TakeDamage(characterStats, targetStats);
@@ -231,7 +296,7 @@ public class EnemyController : MonoBehaviour
         float randomX = Random.Range(-patrolRange,patrolRange);
         float randomZ = Random.Range(-patrolRange, patrolRange);
 
-        Vector3 randomPoint = new Vector3(BirthPos.x + randomX, transform.position.y, BirthPos.z + randomZ);
+        Vector3 randomPoint = new Vector3(birthPos.x + randomX, transform.position.y, birthPos.z + randomZ);
 
         //防止走到not walkable的点
         NavMeshHit hit;
@@ -243,5 +308,16 @@ public class EnemyController : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, sightRadius);
+    }
+
+    public void EndNotify()
+    {
+        //播放胜利动画
+        animator.SetBool("Win", true);
+        playerDead = true;
+
+        isChase = false;
+        isWalk = false;
+        attackTarget = null;
     }
 }

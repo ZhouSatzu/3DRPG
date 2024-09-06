@@ -5,11 +5,8 @@ using System;
 
 
 
-public class MouseManager : MonoBehaviour
+public class MouseManager : Singleton<MouseManager>
 {
-    //单例模式
-    public static MouseManager instance;
-
     //五种鼠标指针
     public Texture2D point, doorway, attack, target, arrow;
     
@@ -18,14 +15,6 @@ public class MouseManager : MonoBehaviour
 
     public event Action<Vector3> OnMouseClicked;
     public event Action<GameObject> OnEnemyClick;
-
-    private void Awake()
-    {
-        if (instance != null) 
-            Destroy(gameObject);
-
-        instance = this;
-    }
 
     private void Update()
     {
@@ -51,6 +40,10 @@ public class MouseManager : MonoBehaviour
                     //vector表示指针有效位置自左上角的偏移量
                     Cursor.SetCursor(attack, new Vector2(16, 16), cursorMode: CursorMode.Auto);
                     break;
+                case "Attackable":
+                    //vector表示指针有效位置自左上角的偏移量
+                    Cursor.SetCursor(attack, new Vector2(16, 16), cursorMode: CursorMode.Auto);
+                    break;
             }
         }
     }
@@ -64,6 +57,10 @@ public class MouseManager : MonoBehaviour
                 OnMouseClicked?.Invoke(hitInfo.point);
             }
             if (hitInfo.collider.gameObject.CompareTag("Enemy"))
+            {
+                OnEnemyClick?.Invoke(hitInfo.collider.gameObject);
+            }
+            if (hitInfo.collider.gameObject.CompareTag("Attackable"))
             {
                 OnEnemyClick?.Invoke(hitInfo.collider.gameObject);
             }

@@ -12,17 +12,29 @@ public class PlayerController : MonoBehaviour
 
     private GameObject attackTarget;
     private float lastAttackTime;
+    private bool isDead;
+
+    private float stopDistance;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         characterStats = GetComponent<CharacterStats>();
+
+        stopDistance = agent.stoppingDistance;
     }
 
     private void Update()
     {
         SwitchAnimation();
+
+        isDead = characterStats.CurrentHealth <= 0;
+        //死亡后广播
+        if (isDead)
+        {
+            GameManager.Instance.NotifyObservers();
+        }
 
         lastAttackTime -= Time.time;
     }
@@ -31,13 +43,16 @@ public class PlayerController : MonoBehaviour
     {
         //sqrMagnitude将vector3转化为float
         animator.SetFloat("Speed",agent.velocity.sqrMagnitude);
+        animator.SetBool("Death",isDead);
     }
 
     private void Start()
     {
         //将函数注册到事件
-        MouseManager.instance.OnMouseClicked += MoveToTarget;
-        MouseManager.instance.OnEnemyClick += EventAttack;
+        MouseManager.Instance.OnMouseClicked += MoveToTarget;
+        MouseManager.Instance.OnEnemyClick += EventAttack;
+
+        GameManager.Instance.RigisterPlayer(characterStats);
     }
 
     public void MoveToTarget(Vector3 target)
@@ -45,12 +60,20 @@ public class PlayerController : MonoBehaviour
         //终止攻击
         StopAllCoroutines();
 
+        if(isDead) 
+            return;
+
+        agent.stoppingDistance = stopDistance;
+
         agent.isStopped = false;
         agent.destination = target; 
     }
     
     private void EventAttack(GameObject target)
     {
+        if(isDead)
+            return;
+        
         if (target != null)
         {
             attackTarget = target;
@@ -61,6 +84,7 @@ public class PlayerController : MonoBehaviour
     IEnumerator MoveToAttackTarget()
     {
         agent.isStopped = false;
+        agent.stoppingDistance = characterStats.attackData.attackRange;
 
         //转向攻击目标
         transform.LookAt(attackTarget.transform);
@@ -89,8 +113,20 @@ public class PlayerController : MonoBehaviour
     //动画中的攻击判定
     void Hit()
     {
-        var targetStats = attackTarget.GetComponent<CharacterStats>();
-        targetStats.TakeDamage(characterStats, targetStats);
+        if (attackTarget.CompareTag("Attackable"))
+        {
+            if(attackTarget.GetComponent<Rock>())
+            { 
+                attackTarget.GetComponent<Rock>().rockState = Rock.RockStates.HitEnemy;
+                attackTarget.GetComponent<Rigidbody>().velocity = Vector3.one;
+                attackTarget.GetComponent<Rigidbody>().AddForce((transform.forward) * 20.0f,ForceMode.Impulse);
+            }
+        }
+        else
+        {
+            var targetStats = attackTarget.GetComponent<CharacterStats>();
+            targetStats.TakeDamage(characterStats, targetStats);
+        }
     }
 }
 
