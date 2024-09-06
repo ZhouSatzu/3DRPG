@@ -214,6 +214,15 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    void Hit()
+    {
+        if (attackTarget != null)
+        {
+            var targetStats = attackTarget.GetComponent<CharacterStats>();
+            targetStats.TakeDamage(characterStats, targetStats);
+        }
+    }
+
     private void GetNewPoint()
     {
         //还原等待的时间

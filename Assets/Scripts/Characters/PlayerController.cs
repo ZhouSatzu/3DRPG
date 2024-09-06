@@ -78,10 +78,19 @@ public class PlayerController : MonoBehaviour
         if (lastAttackTime < 0)
         {
             animator.SetTrigger("Attack");
+            //±©»÷ÅÐ¶Ï
+            characterStats.isCritical = UnityEngine.Random.value < characterStats.attackData.criticalChance;
+            animator.SetBool("Critical",characterStats.isCritical);
             //³äÖµÀäÈ´Ê±¼ä
-            lastAttackTime = 0.5f;
+            lastAttackTime = characterStats.attackData.coolDown;
         }
+    }
 
+    //¶¯»­ÖÐµÄ¹¥»÷ÅÐ¶¨
+    void Hit()
+    {
+        var targetStats = attackTarget.GetComponent<CharacterStats>();
+        targetStats.TakeDamage(characterStats, targetStats);
     }
 }
 
