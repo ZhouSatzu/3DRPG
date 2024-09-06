@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class CharacterStats : MonoBehaviour
 {
+    public event Action<int, int> UpdateHealthBar;
     //模版数据
     public CharacterData_SO templateData;
 
@@ -83,6 +84,7 @@ public class CharacterStats : MonoBehaviour
     #endregion
 
     #region Character Combat
+    //承受伤害
     public void TakeDamage(CharacterStats attacker,CharacterStats defender)
     {
         int damage = Mathf.Max(attacker.currentDamage() - defender.CurrentDefence, 0);
@@ -93,6 +95,13 @@ public class CharacterStats : MonoBehaviour
         {
             defender.GetComponent<Animator>().SetTrigger("Hurt");
         }
+
+        //更新血条
+        UpdateHealthBar?.Invoke(CurrentHealth,MaxHealth);
+
+        //更新经验值
+        if (CurrentHealth <= 0)
+            attacker.characterData.UpdateExp(characterData.killExp);
     }
 
     //函数重载，用于rock造成伤害
@@ -100,6 +109,13 @@ public class CharacterStats : MonoBehaviour
     {
         int currentdamage = Mathf.Max(damage - defender.CurrentDefence, 0);
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
+
+        //更新血条
+        UpdateHealthBar?.Invoke(CurrentHealth, MaxHealth);
+
+        
+        if (CurrentHealth <= 0)
+            GameManager.Instance.playerStats.characterData.UpdateExp(characterData.killExp);
     }
 
     private int currentDamage()

@@ -36,7 +36,8 @@ public class PlayerController : MonoBehaviour
             GameManager.Instance.NotifyObservers();
         }
 
-        lastAttackTime -= Time.time;
+        lastAttackTime -= Time.deltaTime;
+
     }
 
     private void SwitchAnimation()

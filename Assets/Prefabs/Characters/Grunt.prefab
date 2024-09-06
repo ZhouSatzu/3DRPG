@@ -6953,6 +6953,7 @@ GameObject:
   - component: {fileID: 7133750803842480074}
   - component: {fileID: 4274085947387677748}
   - component: {fileID: 5444352627763763458}
+  - component: {fileID: 2020375633300898098}
   m_Layer: 7
   m_Name: Grunt
   m_TagString: Enemy
@@ -6975,6 +6976,7 @@ Transform:
   m_Children:
   - {fileID: 8436127945411983554}
   - {fileID: 7947486956941018546}
+  - {fileID: 4052200084171375893}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -122.211, z: 0}
 --- !u!95 &8531698378750920498
@@ -7074,6 +7076,23 @@ MonoBehaviour:
   lookAtTime: 3
   patrolRange: 0
   kickForce: 15
+--- !u!114 &2020375633300898098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4826673677737280228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0033d691e366ba54ba70278aa241cc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 1670207542718968376, guid: 566933c8e6266ed4993b159e4c5e8fda, type: 3}
+  barPoint: {fileID: 4052200084171375893}
+  alwaysVisible: 0
+  visiableTime: 5
+  timeLeft: 0
 --- !u!1 &5395012072834122453
 GameObject:
   m_ObjectHideFlags: 0
@@ -7424,6 +7443,37 @@ Transform:
   m_Children:
   - {fileID: 7199510607719588684}
   m_Father: {fileID: 3761084322476796229}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8419827398461602913
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4052200084171375893}
+  m_Layer: 7
+  m_Name: HealthBarPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4052200084171375893
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8419827398461602913}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6750247210816949203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8875026075753960991
 GameObject:

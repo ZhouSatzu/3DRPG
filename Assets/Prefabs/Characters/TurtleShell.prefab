@@ -63,6 +63,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4353774328495125329}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &783600628834477496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6344391015049662517}
+  m_Layer: 7
+  m_Name: HealthBarPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6344391015049662517
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783600628834477496}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3385823219405325243}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1378135536474637540
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,6 +306,7 @@ GameObject:
   - component: {fileID: 8794408323516626323}
   - component: {fileID: 393610877514279523}
   - component: {fileID: 8034374630044494777}
+  - component: {fileID: 5386807745093379255}
   m_Layer: 7
   m_Name: TurtleShell
   m_TagString: Enemy
@@ -297,6 +329,7 @@ Transform:
   m_Children:
   - {fileID: 1569361140073867014}
   - {fileID: 7661527395110360361}
+  - {fileID: 6344391015049662517}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 485.327, z: 0}
 --- !u!95 &6043665726052434429
@@ -395,6 +428,23 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &5386807745093379255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2589865752391178116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0033d691e366ba54ba70278aa241cc30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBarPrefab: {fileID: 1670207542718968376, guid: 566933c8e6266ed4993b159e4c5e8fda, type: 3}
+  barPoint: {fileID: 6344391015049662517}
+  alwaysVisible: 0
+  visiableTime: 5
+  timeLeft: 0
 --- !u!1 &3542428830538016816
 GameObject:
   m_ObjectHideFlags: 0
