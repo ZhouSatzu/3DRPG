@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,9 +14,19 @@ public class TransitionPoint : MonoBehaviour
     [Header("Transition Info")]
     public string sceneName;
     public TransitionType transitionType;
+    //要传送的目标点的tag
     public TransitionDestination.DestinationTag destinationTag;
 
     private bool canTrans;
+
+    private void Update()
+    {
+        if(canTrans && Input.GetKeyDown(KeyCode.E))
+        {
+            //执行传送
+            SceneController.Instance.TransitionToDestination(this);
+        }
+    }
 
     private void OnTriggerStay(Collider other)
     {

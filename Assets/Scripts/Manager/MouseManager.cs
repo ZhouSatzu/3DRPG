@@ -16,6 +16,13 @@ public class MouseManager : Singleton<MouseManager>
     public event Action<Vector3> OnMouseClicked;
     public event Action<GameObject> OnEnemyClick;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        //保证在加载时依然存在，使加载能够顺利进行
+        DontDestroyOnLoad(this);
+    }
+
     private void Update()
     {
         SetCursorTexture();
@@ -44,6 +51,10 @@ public class MouseManager : Singleton<MouseManager>
                     //vector表示指针有效位置自左上角的偏移量
                     Cursor.SetCursor(attack, new Vector2(16, 16), cursorMode: CursorMode.Auto);
                     break;
+                case "Portal":
+                    //vector表示指针有效位置自左上角的偏移量
+                    Cursor.SetCursor(doorway, new Vector2(16, 16), cursorMode: CursorMode.Auto);
+                    break;
             }
         }
     }
@@ -63,6 +74,10 @@ public class MouseManager : Singleton<MouseManager>
             if (hitInfo.collider.gameObject.CompareTag("Attackable"))
             {
                 OnEnemyClick?.Invoke(hitInfo.collider.gameObject);
+            }
+            if (hitInfo.collider.gameObject.CompareTag("Portal"))
+            {
+                OnMouseClicked?.Invoke(hitInfo.point);
             }
         }
     }

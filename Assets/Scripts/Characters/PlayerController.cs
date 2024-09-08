@@ -49,11 +49,25 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        //加载数据
+        SaveManager.Instance.LoadPlayerData();
+        Debug.Log("ok");
+    }
+
+    private void OnEnable()
+    {
         //将函数注册到事件
         MouseManager.Instance.OnMouseClicked += MoveToTarget;
         MouseManager.Instance.OnEnemyClick += EventAttack;
-
         GameManager.Instance.RigisterPlayer(characterStats);
+    }
+
+    private void OnDisable()
+    {
+        if (!MouseManager.IsInitialized)
+            return;
+        MouseManager.Instance.OnMouseClicked -= MoveToTarget;
+        MouseManager.Instance.OnEnemyClick -= EventAttack;
     }
 
     public void MoveToTarget(Vector3 target)
