@@ -55,6 +55,10 @@ public class MouseManager : Singleton<MouseManager>
                     //vector表示指针有效位置自左上角的偏移量
                     Cursor.SetCursor(doorway, new Vector2(16, 16), cursorMode: CursorMode.Auto);
                     break;
+                case "Item":
+                    //vector表示指针有效位置自左上角的偏移量
+                    Cursor.SetCursor(point, new Vector2(16, 16), cursorMode: CursorMode.Auto);
+                    break;
             }
         }
     }
@@ -76,6 +80,10 @@ public class MouseManager : Singleton<MouseManager>
                 OnEnemyClick?.Invoke(hitInfo.collider.gameObject);
             }
             if (hitInfo.collider.gameObject.CompareTag("Portal"))
+            {
+                OnMouseClicked?.Invoke(hitInfo.point);
+            }
+            if (hitInfo.collider.gameObject.CompareTag("Item"))
             {
                 OnMouseClicked?.Invoke(hitInfo.point);
             }

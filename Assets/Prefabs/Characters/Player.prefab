@@ -1637,6 +1637,7 @@ MonoBehaviour:
   characterData: {fileID: 0}
   attackData: {fileID: 11400000, guid: 0ef7f870961943945b7557cfae1a547c, type: 2}
   isCritical: 0
+  weaponSlot: {fileID: 5802210775402619742}
 --- !u!54 &2694135914910771487
 Rigidbody:
   m_ObjectHideFlags: 0

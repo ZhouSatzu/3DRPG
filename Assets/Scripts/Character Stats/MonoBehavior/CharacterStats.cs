@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+
 //using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -14,6 +16,9 @@ public class CharacterStats : MonoBehaviour
     public AttackData_SO attackData;
 
     [HideInInspector]public bool isCritical;
+
+    [Header("Weapon")]
+    public Transform weaponSlot;
 
     private void Awake()
     {
@@ -130,4 +135,15 @@ public class CharacterStats : MonoBehaviour
         return (int)coreDamage;
     }
     #endregion
+
+    public void EquipWeapon(ItemData_SO weapon)
+    {
+        if(weapon.weaponPrefab != null)
+        {
+            Instantiate(weapon.weaponPrefab, weaponSlot);
+        }
+        //TODO:ÇÐ»»¹¥»÷ÊôÐÔ
+        //attackData.ApplyWeaponData(weapon.weaponData);
+        attackData = weapon.weaponData; //×ÔÖúÌí¼Ó
+    }
 }
