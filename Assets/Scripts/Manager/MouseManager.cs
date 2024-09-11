@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.EventSystems;
 
 
 
@@ -26,6 +27,8 @@ public class MouseManager : Singleton<MouseManager>
     private void Update()
     {
         SetCursorTexture();
+        //如果在和ui互动则点击人物不移动
+        if (InteractWithUI()) return;
         MouseControl();
     }
 
@@ -88,5 +91,14 @@ public class MouseManager : Singleton<MouseManager>
                 OnMouseClicked?.Invoke(hitInfo.point);
             }
         }
+    }
+
+    bool InteractWithUI()
+    {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return true;
+        }
+        else return false;
     }
 }

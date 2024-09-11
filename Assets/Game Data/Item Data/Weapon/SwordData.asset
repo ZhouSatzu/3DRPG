@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: SwordData
   m_EditorClassIdentifier: 
   itemType: 1
-  itemName: TrainingSword
+  itemName: "\u8BAD\u7EC3\u5927\u5251"
   itemIcon: {fileID: 21300000, guid: b3e538815fc96674dbd1ad0c1c9f5390, type: 3}
   itemAmount: 1
   stackable: 0
   description: "\u65B0\u4EBA\u5192\u9669\u5BB6\u8BAD\u7EC3\u4F7F\u7528\u7684\u5927\u5251"
   weaponPrefab: {fileID: 4422948993708860365, guid: 0b26e84295d45504283c37422b0fa9e2, type: 3}
   weaponData: {fileID: 11400000, guid: 216ea6c4d4dd4a24f841bbd5bd7e0452, type: 2}
+  weaponAnimator: {fileID: 22100000, guid: e94ad2dcac08cb64d86c2804cdaf70f8, type: 2}
+  useableItemData: {fileID: 0}

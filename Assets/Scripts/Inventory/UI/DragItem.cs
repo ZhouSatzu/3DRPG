@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(ItemUI))]
 public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    //当前拖拽的物体
     ItemUI currentItemUI;
     SlotHolder currentHolder;
     SlotHolder targetHolder;
@@ -35,6 +36,7 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     void IEndDragHandler.OnEndDrag(PointerEventData eventData)
     {
+        Debug.Log("111");
         //是否指向UI物体
         if(EventSystem.current.IsPointerOverGameObject())
         {
@@ -57,10 +59,17 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                         SwapItem();
                         break;
                     case SlotType.Action:
+                        //只有可使用的物品能放入快捷栏
+                        if (currentItemUI.ItemSInventoryData.items[currentItemUI.Index].itemData.itemType == ItemType.Usable)
+                            SwapItem();
                         break;
                     case SlotType.Weapon:
+                        if (currentItemUI.ItemSInventoryData.items[currentItemUI.Index].itemData.itemType == ItemType.Weapon)
+                            SwapItem();
                         break;
                     case SlotType.Armor:
+                        if (currentItemUI.ItemSInventoryData.items[currentItemUI.Index].itemData.itemType == ItemType.Armor)
+                            SwapItem();
                         break;
                 }
 
@@ -71,6 +80,7 @@ public class DragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
         //返回原本的父级
         transform.SetParent(InventoryManager.Instance.currentDrag.originalParent);
+        Debug.Log(InventoryManager.Instance.currentDrag.originalParent);
         //保证item位置不偏移
         RectTransform t = transform as RectTransform;
         t.offsetMax = -Vector2.one * 5;

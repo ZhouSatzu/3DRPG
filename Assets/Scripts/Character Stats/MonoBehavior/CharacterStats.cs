@@ -13,9 +13,14 @@ public class CharacterStats : MonoBehaviour
     public CharacterData_SO templateData;
 
     public CharacterData_SO characterData;
+
     public AttackData_SO attackData;
 
+    public AttackData_SO baseAttackData;
+
     [HideInInspector]public bool isCritical;
+
+    private RuntimeAnimatorController baseAnimator;
 
     [Header("Weapon")]
     public Transform weaponSlot;
@@ -27,6 +32,14 @@ public class CharacterStats : MonoBehaviour
         {
             characterData = Instantiate(templateData);
         }
+
+        //使游戏开始时的攻击力等于初始的攻击力
+        if(baseAttackData != null)
+        {
+            attackData = Instantiate(baseAttackData);
+        }
+
+        baseAnimator = GetComponent<Animator>().runtimeAnimatorController;
     }
 
     #region Read From Data_SO
@@ -136,14 +149,56 @@ public class CharacterStats : MonoBehaviour
     }
     #endregion
 
+    #region Equipment
+    
     public void EquipWeapon(ItemData_SO weapon)
     {
+        Debug.Log("nooooooo");
         if(weapon.weaponPrefab != null)
         {
             Instantiate(weapon.weaponPrefab, weaponSlot);
         }
-        //TODO:切换攻击属性
+        //切换攻击属性
         //attackData.ApplyWeaponData(weapon.weaponData);
         attackData = weapon.weaponData; //自助添加
+
+        //切换动画
+        GetComponent<Animator>().runtimeAnimatorController = weapon.weaponAnimator;
     }
+
+    public void UnEquipWeapon()
+    {
+        if (weaponSlot.transform.childCount != 0)
+        {
+            for (int i = 0; i < weaponSlot.transform.childCount; i++)
+            {
+                //摧毁手部的武器物体
+                Destroy(weaponSlot.transform.GetChild(i).gameObject);
+            }
+        }
+
+        //切换动画
+        GetComponent<Animator>().runtimeAnimatorController = baseAnimator;
+
+        attackData = baseAttackData;
+    }
+
+    public void ChangeWeapon(ItemData_SO weapon)
+    {
+        UnEquipWeapon();
+        EquipWeapon(weapon);
+    }
+
+    #endregion
+
+    #region Apply Data Change
+    public void ApplyHealth(int recoverAmount)
+    {
+        if (CurrentHealth + recoverAmount <= MaxHealth)
+            CurrentHealth += recoverAmount;
+        else
+            CurrentHealth = MaxHealth;
+    }
+
+    #endregion
 }

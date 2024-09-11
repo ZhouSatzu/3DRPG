@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class InventoryManager : Singleton<InventoryManager>
 {
+    bool isOpen = false;
+
     //用来保存拖拽物品的原始数据
     public class DragData
     {
@@ -25,11 +27,28 @@ public class InventoryManager : Singleton<InventoryManager>
     public Canvas dragCanvas;
     public DragData currentDrag;
 
+    [Header("UI Panel")]
+    public GameObject bagPanel;
+    public GameObject characterPanel;
+
+    [Header("Tooltip")]
+    public ItemTooltip itemTooltip;
+
     private void Start()
     {
         bagContainerUI.RefreshUI();
         actionContainerUI.RefreshUI();
         equipmentContainerUI.RefreshUI();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            isOpen = !isOpen;
+            bagPanel.SetActive(isOpen);
+            characterPanel.SetActive(isOpen); 
+        }
     }
 
     #region 检查拖拽物品是否在每一个slot范围内

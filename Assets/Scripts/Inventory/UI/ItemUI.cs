@@ -10,10 +10,17 @@ public class ItemUI : MonoBehaviour
 
     //用来表示该item所属的Inventory 背包 快捷栏 装备栏
     public InventoryData_SO ItemSInventoryData {  get; set; }
+    //itemUI并没有记录itemData，要得到itemData需要通过currentItemUI.ItemSInventoryData.items[currentItemUI.Index].itemData
     public int Index { get; set; } = -1;
 
     public void SetupItemUI(ItemData_SO item,int itemAomunt)
     {
+        if(itemAomunt == 0)
+        {
+            ItemSInventoryData.items[Index].itemData = null;
+            icon.gameObject.SetActive(false);
+            return;
+        }   
         if(item != null)
         {
             icon.sprite = item.itemIcon;
@@ -22,5 +29,10 @@ public class ItemUI : MonoBehaviour
         }
         else
             icon.gameObject.SetActive(false) ;
+    }
+
+    public ItemData_SO GetItem()
+    {
+        return ItemSInventoryData.items[Index].itemData;
     }
 }
